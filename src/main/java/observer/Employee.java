@@ -5,47 +5,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Représente un employé qui peut recevoir des notifications.
+ * Un employé qui peut recevoir des notifications.
  * Implémente l'interface Subscriber pour le pattern Observer.
  */
 public class Employee implements Subscriber {
-    @Expose private String name; // Nom de l'employé (sérialisé avec Gson)
-    @Expose private String email; // Email de l'employé
-    @Expose private boolean subscribed; // Statut d'abonnement
-    @Expose private List<Notification> receivedNotifications = new ArrayList<>(); // Notifications reçues
+
+    @Expose private String name;               // Nom de l'employé (sérialisé avec Gson)
+    @Expose private String email;              // Email de l'employé
+    @Expose private boolean subscribed;        // Statut d'abonnement
+    @Expose private List<Notification> receivedNotifications = new ArrayList<>(); // Historique des notifications
+
+    // Constructeurs
+    public Employee() {} // Nécessaire pour la désérialisation JSON
 
     /**
-     * Constructeur par défaut pour Gson.
-     */
-    public Employee() {} // Pour GSON
-
-    /**
-     * Constructeur avec nom et email.
-     * @param name Nom de l'employé.
-     * @param email Email de l'employé.
+     * Crée un nouvel employé abonné par défaut.
+     * @param name Le nom de l'employé.
+     * @param email L'email de l'employé.
      */
     public Employee(String name, String email) {
         this.name = name;
         this.email = email;
-        this.subscribed = true;
+        this.subscribed = true; // Abonné par défaut
     }
 
-    /**
-     * Met à jour l'employé avec une nouvelle notification.
-     * @param notification Notification reçue.
-     */
+    // Méthodes de l'interface Subscriber
     @Override
     public void update(Notification notification) {
-        if (!notification.getSenderName().equals(this.name)) {
+        if (!notification.getSenderName().equals(this.name)) { // Empêche l'auto-notification
             receivedNotifications.add(notification);
             if (notification.getType() == NotificationType.CONSOLE) {
-                System.out.printf("[CONSOLE] %s reçoit: %s (de %s)%n",
+                System.out.printf("[CONSOLE] %s a reçu : « %s » (de %s)%n",
                         name, notification.getMessage(), notification.getSenderName());
             }
         }
     }
 
-    // Getters/Setters
+    // Getters & Setters
     @Override
     public String getName() { return name; }
 
