@@ -47,7 +47,7 @@ public class EmailService {
             Transport.send(message);// Envoie l'email
             System.out.printf("[SMTP] Email envoyé à %s%n", to);// Confirmation
         } catch (MessagingException e) {
-            System.err.println("Erreur SMTP: " + e.getMessage());// Gestion des erreurs
+            System.err.println("Erreur dans smtp" );// Gestion des erreurs
         }
     }
 }

@@ -215,20 +215,34 @@ public class NotificationService {
         String sender = scanner.nextLine();
         System.out.print("Message: ");
         String message = scanner.nextLine();
-        System.out.print("Type (EMAIL/CONSOLE): ");
-        NotificationType type = NotificationType.valueOf(scanner.nextLine().toUpperCase());
 
-        Notification notif = new Notification(sender, message, type);
+        // Make type effectively final by using a separate variable
+        NotificationType finalType = getNotificationTypeFromUser();
+
+        Notification notif = new Notification(sender, message, finalType);
         subscribers.stream()
-                .filter(Subscriber::isSubscribed)  // Filtre les abonnés actifs
+                .filter(Subscriber::isSubscribed)
                 .forEach(s -> {
-                    if (type == NotificationType.EMAIL) {
+                    if (finalType == NotificationType.EMAIL) {
                         emailService.sendEmail(s.getEmail(), "Notification de " + sender, message);
                     }
-                    s.update(notif);  // Notifie l'abonné
+                    s.update(notif);
                 });
 
-        saveData();  // Sauvegarde les notifications
+        saveData();
         System.out.println("Notification envoyée à tous les abonnés !");
+    }
+
+    // Helper method to get valid notification type from user
+    private NotificationType getNotificationTypeFromUser() {
+        while (true) {
+            System.out.print("Type (EMAIL/CONSOLE/SMS): ");
+            String typeInput = scanner.nextLine().toUpperCase();
+            try {
+                return NotificationType.valueOf(typeInput);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Type invalide! Les options sont: EMAIL, CONSOLE ou SMS");
+            }
+        }
     }
 }
